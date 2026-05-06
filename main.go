@@ -36,12 +36,12 @@ products := []Product{
 }
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/products", getProducts)
+	router := http.NewServeMux()
+	router.HandleFunc("/products", getProducts)
 
 	port := ":8080"
 	println("🚀 Server is running at http://localhost" + port)
-	err := http.ListenAndServe(port, mux)
+	err := http.ListenAndServe(port, router)
 	if err != nil {
 		fmt.Println("Error starting the server", err)
 	}
