@@ -29,7 +29,7 @@ func (mngr *Manager)With (middlewares ...Middleware)Middleware{
 }
 */
 
-
+/*
 func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Handler{ 
 
 	n := next 
@@ -37,6 +37,30 @@ func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Han
 	// middlewares = [Logger,Hudai]
 	for _,middleware := range middlewares{
 		n = middleware(n)
+	}
+
+	return n  // middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetProducts)))
+}
+*/
+
+// builder pattern
+func (mgnr *Manager)Use(middlewares ...Middleware) {
+	// middlewares = [Logger,Hudai]
+	mgnr.globalMiddlewares = append(mgnr.globalMiddlewares, middlewares...)
+}
+
+
+func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Handler{ 
+
+	n := next 
+
+	for _,middleware := range middlewares{
+		n = middleware(n)
+	}
+
+	// mngr.globalMiddlewares = [Logger,Hudai]
+	for _, globalMiddleware := range mngr.globalMiddlewares{
+		n = globalMiddleware(n)
 	}
 
 	return n  // middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetProducts)))

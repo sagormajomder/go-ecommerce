@@ -21,15 +21,22 @@ func Serve(){
 	// 										)(http.HandlerFunc(handlers.GetRoot))) 
 
 	//* Second Manager Implement
-	manager:= middleware.NewManager()
+	// manager:= middleware.NewManager()
+	// mux.Handle("GET /", manager.With(
+	// 										http.HandlerFunc(handlers.GetRoot),
+	// 										middleware.Logger, middleware.Hudai))
+
+	//* Best Manager Implement
+	manager:= middleware.NewManager() 
+	manager.Use(middleware.Logger, middleware.Hudai)
+
 	mux.Handle("GET /", manager.With(
-											http.HandlerFunc(handlers.GetRoot),
-											middleware.Logger, middleware.Hudai))
+		http.HandlerFunc(handlers.GetRoot),middleware.ArektaHudai))
 
 
-	mux.Handle("GET /products", http.HandlerFunc(handlers.GetProducts))
-	mux.Handle("POST /products", http.HandlerFunc(handlers.CreateProduct))
-	mux.Handle("GET /products/{id}", http.HandlerFunc(handlers.GetProductByID))
+	mux.Handle("GET /products", manager.With(http.HandlerFunc(handlers.GetProducts)))
+	mux.Handle("POST /products", manager.With(http.HandlerFunc(handlers.CreateProduct)))
+	mux.Handle("GET /products/{id}", manager.With(http.HandlerFunc(handlers.GetProductByID)))
 
 	port := ":8080"
 	globalRouter := global_router.GlobalRouter(mux)
