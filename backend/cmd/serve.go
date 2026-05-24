@@ -7,9 +7,8 @@ import (
 )
 
 func Serve(){
-	mux := http.NewServeMux()
-
-
+	port := ":8080"
+	
 	// mux.Handle("GET /", middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetRoot)))) 
 	//* First Manager Implement 
 	// manager:= middleware.NewManager()
@@ -26,14 +25,16 @@ func Serve(){
 
 	//* Best Manager Implement
 	manager:= middleware.NewManager() 
-	manager.Use(middleware.Logger, middleware.Hudai,middleware.CorsWithPreflight)
+	manager.Use(middleware.Logger,middleware.Cors,middleware.Preflight)
 
+
+	mux := http.NewServeMux()
+	wrappedMux := manager.WrapMux(mux)
 	initRoutes(mux, manager)
 
-	port := ":8080"
 	println("🚀 Server is running at http://localhost" + port)
 
-	err := http.ListenAndServe(port, mux)
+	err := http.ListenAndServe(port, wrappedMux)
 	if err != nil {
 		fmt.Println("Error starting the server", err)
 	}

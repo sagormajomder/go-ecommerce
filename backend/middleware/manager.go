@@ -45,7 +45,7 @@ func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Han
 
 // builder pattern
 func (mgnr *Manager)Use(middlewares ...Middleware) {
-	// middlewares = [Logger,Hudai]
+	// middlewares = [Logger,Cors,Preflight]
 	mgnr.globalMiddlewares = append(mgnr.globalMiddlewares, middlewares...)
 }
 
@@ -58,10 +58,22 @@ func (mngr *Manager) With(next http.Handler, middlewares ...Middleware) http.Han
 		n = middleware(n)
 	}
 
-	// mngr.globalMiddlewares = [Logger,Hudai]
-	for _, globalMiddleware := range mngr.globalMiddlewares{
-		n = globalMiddleware(n)
+
+	return n 
+}
+func (mngr *Manager) WrapMux(next http.Handler) http.Handler{ 
+
+	n := next 
+
+	// mngr.globalMiddlewares = [Preflight,Cors, Logger]
+	// for _, globalMiddleware := range mngr.globalMiddlewares{
+	// 	n = globalMiddleware(n)
+	// }
+
+	// mngr.globalMiddlewares = [Logger,Cors,Preflight]
+	for i:=len(mngr.globalMiddlewares)-1; i>=0; i--{
+		n = mngr.globalMiddlewares[i](n)
 	}
 
-	return n  // middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetProducts)))
+	return n  // middleware.Logger(middleware.Cors(middleware.Preflight(http.HandlerFunc(mux))))
 }

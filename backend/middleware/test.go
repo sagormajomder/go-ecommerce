@@ -5,9 +5,13 @@ import (
 	"net/http"
 )
 
-func Hudai(next http.Handler) http.Handler{
-	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
-		log.Println("Ami hudai middleware");
+
+func ArektaHudai(next http.Handler) http.Handler{
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		log.Println("Ami arekta middleware")
+
 		next.ServeHTTP(w,r)
 	})
+
 }
