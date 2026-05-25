@@ -1,13 +1,16 @@
 package cmd
 
 import (
+	"ecommerce/config"
 	"ecommerce/middleware"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func Serve(){
-	port := ":8080"
+	cfn:= config.GetConfig()
 	
 	// mux.Handle("GET /", middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetRoot)))) 
 	//* First Manager Implement 
@@ -32,10 +35,12 @@ func Serve(){
 	wrappedMux := manager.WrapMux(mux)
 	initRoutes(mux, manager)
 
-	println("🚀 Server is running at http://localhost" + port)
+	addr:= ":"+ strconv.Itoa(cfn.HttpPort)
+	println("🚀 Server is running at http://localhost" +addr)
 
-	err := http.ListenAndServe(port, wrappedMux)
+	err := http.ListenAndServe(addr, wrappedMux)
 	if err != nil {
 		fmt.Println("Error starting the server", err)
+		os.Exit(1)
 	}
 }
