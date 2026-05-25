@@ -20,7 +20,7 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdProduct:=database.Store(newProduct)
+	createdProduct := database.Store(newProduct)
 
 	util.SendData(w, createdProduct, 201)
 

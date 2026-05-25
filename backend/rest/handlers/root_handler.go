@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func GetRoot(w http.ResponseWriter, r *http.Request){
-	util.SendData(w,"Hello World",200)
+func GetRoot(w http.ResponseWriter, r *http.Request) {
+	util.SendData(w, "Hello World", 200)
 }

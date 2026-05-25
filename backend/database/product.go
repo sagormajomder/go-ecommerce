@@ -1,6 +1,5 @@
 package database
 
-
 type Product struct {
 	ID          int     `json:"id"`
 	Title       string  `json:"title"`
@@ -11,21 +10,21 @@ type Product struct {
 
 var productList []Product
 
-func Store (p Product) Product {
+func Store(p Product) Product {
 	p.ID = len(productList) + 1
 	productList = append(productList, p)
 	return p
 }
 
-func List() []Product{
+func List() []Product {
 	return productList
 }
 
-func Get(id int) *Product{
+func Get(id int) *Product {
 	for _, product := range productList {
-		 if product.ID == id {
+		if product.ID == id {
 			return &product
-		 }
+		}
 	}
 
 	return nil
@@ -34,20 +33,20 @@ func Get(id int) *Product{
 func Update(id int, p Product) Product {
 	p.ID = id
 	for idx, product := range productList {
-		 if product.ID == p.ID {
+		if product.ID == p.ID {
 			productList[idx] = p
-		 }
+		}
 	}
 
 	return p
 }
 
-func Delete(id int){
+func Delete(id int) {
 	var tempList []Product
 	for _, product := range productList {
-		 if product.ID != id {
+		if product.ID != id {
 			tempList = append(tempList, product)
-		 }
+		}
 	}
 	productList = tempList
 }

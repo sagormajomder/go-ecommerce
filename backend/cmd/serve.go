@@ -5,7 +5,7 @@ import (
 	"ecommerce/rest"
 )
 
-func Serve(){
-	cnf:= config.GetConfig()
+func Serve() {
+	cnf := config.GetConfig()
 	rest.Start(cnf)
 }

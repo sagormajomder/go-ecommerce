@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func initRoutes(mux *http.ServeMux, manager *middlewares.Manager){
-	
+func initRoutes(mux *http.ServeMux, manager *middlewares.Manager) {
+
 	mux.Handle("GET /", manager.With(
 		http.HandlerFunc(handlers.GetRoot)))
 
@@ -20,5 +20,5 @@ func initRoutes(mux *http.ServeMux, manager *middlewares.Manager){
 	mux.Handle("PUT /products/{id}", manager.With(http.HandlerFunc(handlers.UpdateProduct)))
 
 	mux.Handle("DELETE /products/{id}", manager.With(http.HandlerFunc(handlers.DeleteProduct)))
-	
+
 }
