@@ -1,13 +1,11 @@
-package middleware
+package middlewares
 
 import (
-	"fmt"
 	"net/http"
 )
 
 func Preflight(next http.Handler) http.Handler {
 		return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
-			fmt.Println("Preflight")
 			if r.Method == "OPTIONS" {
 			w.WriteHeader(200)
 			return

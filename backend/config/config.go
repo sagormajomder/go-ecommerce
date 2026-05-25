@@ -13,7 +13,7 @@ type Config struct{
 	HttpPort int
 }
 
-var cfg Config
+var cnf Config
 
 func loadConfig() {
 
@@ -44,7 +44,7 @@ func loadConfig() {
 		log.Fatal("port must be in number:",err)
 	}
 
-	cfg = Config{
+	cnf = Config{
 		Version: version,
 		ServiceName:   serviceName,
 		HttpPort:  port,
@@ -53,5 +53,5 @@ func loadConfig() {
 
 func GetConfig() Config {
 	loadConfig()
-	return cfg
+	return cnf
 }

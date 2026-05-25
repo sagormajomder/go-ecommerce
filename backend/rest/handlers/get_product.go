@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func GetProductByID(w http.ResponseWriter, r *http.Request){
+func GetProduct(w http.ResponseWriter, r *http.Request){
 	productID := r.PathValue("id")
 
 	id, err := strconv.Atoi(productID)
@@ -17,13 +17,13 @@ func GetProductByID(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	for _, product := range database.ProductList {
-		 if product.ID == id {
-			util.SendData(w, product, 200)
-			return
-		 }
-	}
+	productById := database.Get(id)
 
-	util.SendData(w, "Data not found", 404)
+	if productById ==nil {
+		util.SendError(w,404, "Product not found")
+		return
+	}
+	
+	util.SendData(w,productById, 200)
 	
 }
