@@ -15,7 +15,7 @@ type Config struct {
 	JWTSecret   string
 }
 
-var cnf Config
+var cnf *Config
 
 func loadConfig() {
 
@@ -51,7 +51,7 @@ func loadConfig() {
 		log.Fatal("Jwt secret is required")
 	}
 
-	cnf = Config{
+	cnf = &Config{
 		Version:     version,
 		ServiceName: serviceName,
 		HttpPort:    port,
@@ -59,7 +59,9 @@ func loadConfig() {
 	}
 }
 
-func GetConfig() Config {
-	loadConfig()
+func GetConfig() *Config {
+	if cnf == nil {
+		loadConfig()
+	}
 	return cnf
 }

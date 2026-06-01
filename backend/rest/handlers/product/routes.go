@@ -9,12 +9,11 @@ func (h *Handler) RegisterHandlers(mux *http.ServeMux, manager *middlewares.Mana
 
 	mux.Handle("GET /products", manager.With(http.HandlerFunc(h.GetProducts)))
 
-	mux.Handle("POST /products", manager.With(http.HandlerFunc(h.CreateProduct), middlewares.AuthenticateJWT))
+	mux.Handle("POST /products", manager.With(http.HandlerFunc(h.CreateProduct), h.middlewares.AuthenticateJWT))
 
 	mux.Handle("GET /products/{id}", manager.With(http.HandlerFunc(h.GetProduct)))
 
-	mux.Handle("PUT /products/{id}", manager.With(http.HandlerFunc(h.UpdateProduct), middlewares.AuthenticateJWT))
+	mux.Handle("PUT /products/{id}", manager.With(http.HandlerFunc(h.UpdateProduct), h.middlewares.AuthenticateJWT))
 
-	mux.Handle("DELETE /products/{id}", manager.With(http.HandlerFunc(h.DeleteProduct), middlewares.AuthenticateJWT))
-
+	mux.Handle("DELETE /products/{id}", manager.With(http.HandlerFunc(h.DeleteProduct), h.middlewares.AuthenticateJWT))
 }
