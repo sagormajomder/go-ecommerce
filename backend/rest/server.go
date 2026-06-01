@@ -2,6 +2,8 @@ package rest
 
 import (
 	"ecommerce/config"
+	"ecommerce/rest/handlers/product"
+	"ecommerce/rest/handlers/user"
 	"ecommerce/rest/middlewares"
 	"fmt"
 	"net/http"
@@ -9,7 +11,21 @@ import (
 	"strconv"
 )
 
-func Start(cnf config.Config) {
+type Server struct {
+	cnf            config.Config
+	userHandler    *user.Handler
+	productHandler *product.Handler
+}
+
+func NewServer(cnf config.Config, userHandler *user.Handler, productHandler *product.Handler) *Server {
+	return &Server{
+		cnf:            cnf,
+		userHandler:    userHandler,
+		productHandler: productHandler,
+	}
+}
+
+func (server *Server) Start() {
 	// mux.Handle("GET /", middlewares.Hudai(middlewares.Logger(http.HandlerFunc(handlers.GetRoot))))
 	//* First Manager Implement
 	// manager:= middlewares.NewManager()
@@ -30,9 +46,12 @@ func Start(cnf config.Config) {
 
 	mux := http.NewServeMux()
 	wrappedMux := manager.WrapMux(mux)
-	initRoutes(mux, manager)
 
-	addr := ":" + strconv.Itoa(cnf.HttpPort)
+	initRoutes(mux, manager)
+	server.productHandler.RegisterHandlers(mux, manager)
+	server.userHandler.RegisterHandlers(mux, manager)
+
+	addr := ":" + strconv.Itoa(server.cnf.HttpPort)
 	println("🚀 Server is running at http://localhost" + addr)
 
 	err := http.ListenAndServe(addr, wrappedMux)

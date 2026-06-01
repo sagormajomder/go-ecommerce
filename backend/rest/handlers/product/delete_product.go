@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"ecommerce/database"
@@ -7,7 +7,8 @@ import (
 	"strconv"
 )
 
-func GetProduct(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+
 	productID := r.PathValue("id")
 
 	id, err := strconv.Atoi(productID)
@@ -17,13 +18,8 @@ func GetProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productById := database.Get(id)
+	database.Delete(id)
 
-	if productById == nil {
-		util.SendError(w, 404, "Product not found")
-		return
-	}
-
-	util.SendData(w, productById, 200)
+	util.SendData(w, "Product Deleted Successfully", 200)
 
 }
