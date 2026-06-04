@@ -103,6 +103,9 @@ func (repo *productRepo) List() ([]*Product, error) {
 	err := repo.db.Select(&prdList, query)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 

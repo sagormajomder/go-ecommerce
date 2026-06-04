@@ -9,6 +9,7 @@ import (
 	"ecommerce/rest/handlers/user"
 	"ecommerce/rest/middlewares"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -21,6 +22,12 @@ func Serve() {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+
+	err = db.MigrateDB(dbCon, "./migrations")
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	productRepo := repo.NewProductRepo(dbCon)

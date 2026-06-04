@@ -12,7 +12,7 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
@@ -21,5 +21,5 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "No users created", http.StatusNotFound)
+	util.SendError(w, http.StatusNotFound, "No users created")
 }

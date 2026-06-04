@@ -12,6 +12,7 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 	util.SendData(w, productList, 200)
 }
