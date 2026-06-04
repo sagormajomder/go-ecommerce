@@ -2,6 +2,7 @@ package product
 
 import (
 	"ecommerce/util"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -12,14 +13,16 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(productID)
 
 	if err != nil {
-		http.Error(w, "Please give me a valid product id", 400)
+		fmt.Println(err)
+		util.SendError(w, 400, "Please give me a valid product id")
 		return
 	}
 
 	productById, err := h.productRepo.Get(id)
 
 	if err != nil {
-		http.Error(w, "Internet server Error", http.StatusInternalServerError)
+		fmt.Println(err)
+		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 

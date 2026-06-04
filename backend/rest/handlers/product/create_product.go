@@ -23,7 +23,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Please give me valid json", 400)
+		util.SendError(w, 400, "Please give me valid json")
 		return
 	}
 
@@ -35,7 +35,8 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		fmt.Println(err)
+		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
