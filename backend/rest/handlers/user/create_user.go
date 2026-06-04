@@ -37,12 +37,13 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		fmt.Println(err)
+		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	if createdUser == nil {
-		http.Error(w, "User Already Existed", http.StatusBadRequest)
+		util.SendError(w, http.StatusConflict, "User Already Exits")
 		return
 	}
 

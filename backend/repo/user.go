@@ -1,12 +1,19 @@
 package repo
 
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/jmoiron/sqlx"
+)
+
 type User struct {
-	ID          int    `json:"id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	IsShopOwner bool   `json:"is_shop_owner"`
+	ID          int    `json:"id" db:"id"`
+	FirstName   string `json:"first_name" db:"first_name"`
+	LastName    string `json:"last_name" db:"last_name"`
+	Email       string `json:"email" db:"email"`
+	Password    string `json:"password" db:"password"`
+	IsShopOwner bool   `json:"is_shop_owner" db:"is_shop_owner"`
 }
 
 type UserRepo interface {
@@ -18,66 +25,133 @@ type UserRepo interface {
 }
 
 type userRepo struct {
-	userList []*User
+	// userList []*User
+	db *sqlx.DB
 }
 
-func NewUserRepo() UserRepo {
-	return &userRepo{}
+func NewUserRepo(db *sqlx.DB) UserRepo {
+	return &userRepo{
+		db: db,
+	}
 }
 
-func (user *userRepo) Create(u User) (*User, error) {
-	// if u.ID !=0{
-	// 	return &u,nil
-	// }
+func (r *userRepo) Create(u User) (*User, error) {
 
-	usr, _ := user.Get(u.Email, u.Password)
+	usr, err := r.Get(u.Email, u.Password)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
 	if usr != nil {
 		return nil, nil
 	}
 
-	u.ID = len(user.userList) + 1
-	user.userList = append(user.userList, &u)
+	query := `
+	INSERT INTO users (
+	first_name, 
+	last_name, 
+	email, 
+	password, 
+	is_shop_owner
+	) 
+	VALUES (
+	:first_name,
+	:last_name, 
+	:email, 
+	:password, 
+	:is_shop_owner
+	) 
+	RETURNING id
+`
+
+	rows, err := r.db.NamedQuery(query, u)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	if rows.Next() {
+		rows.Scan(&u.ID)
+	}
+
 	return &u, nil
 }
 
-func (user *userRepo) Get(email, pass string) (*User, error) {
+func (r *userRepo) Get(email, pass string) (*User, error) {
+	var user User
 
-	for _, user := range user.userList {
-		if user.Email == email && user.Password == pass {
-			return user, nil
+	query := `
+	SELECT id, first_name, last_name, email, password, is_shop_owner FROM users
+	WHERE email = $1 AND password = $2
+	LIMIT 1
+	`
+	err := r.db.Get(&user, query, email, pass)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
+		return nil, err
 	}
 
-	return nil, nil
+	return &user, nil
 }
 
-func (user *userRepo) List() ([]*User, error) {
-	return user.userList, nil
+func (r *userRepo) List() ([]*User, error) {
 
-}
+	var usrs []*User
 
-func (user *userRepo) Delete(id int) error {
-	var temList []*User
-	for _, u := range user.userList {
-		if u.ID != id {
-			temList = append(temList, u)
-		}
+	query := `
+	SELECT 
+	id,
+	first_name,
+	last_name,
+	email,
+	is_shop_owner 
+	FROM users
+	`
+	err := r.db.Select(&usrs, query)
+
+	if err != nil {
+		return nil, err
 	}
-	user.userList = temList
+
+	return usrs, nil
+
+}
+
+func (r *userRepo) Delete(id int) error {
+	query := `
+	DELETE FROM users 
+	WHERE id=$1
+	`
+
+	_, err := r.db.Exec(query, id)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
-func (user *userRepo) Update(id int, u User) (*User, error) {
-	u.ID = id
-	for idx, usr := range user.userList {
-		if usr.ID == u.ID {
-			user.userList[idx] = &u
-		}
+func (r *userRepo) Update(id int, u User) (*User, error) {
+
+	query := `
+	UPDATE users SET 
+	first_name=$1,
+	last_name=$2,
+	email=$3,
+	is_shop_owner=$4
+	WHERE id=$5
+	`
+	row := r.db.QueryRow(query, u.FirstName, u.LastName, u.Email, u.IsShopOwner, id)
+
+	err := row.Err()
+
+	if err != nil {
+		return nil, err
 	}
 
 	return &u, nil

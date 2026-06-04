@@ -20,19 +20,20 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Invalid Request Data", http.StatusBadRequest)
+		util.SendError(w, http.StatusBadRequest, "Invalid user request")
 		return
 	}
 
 	usr, err := h.userRepo.Get(reqLogin.Email, reqLogin.Password)
 
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		fmt.Println(err)
+		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	if usr == nil {
-		http.Error(w, "Invalid Credential", http.StatusBadRequest)
+		util.SendError(w, http.StatusBadRequest, "Invalid credential")
 		return
 	}
 
@@ -45,7 +46,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		fmt.Println(err)
+		util.SendError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
